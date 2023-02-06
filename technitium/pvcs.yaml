@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: technitium-local-pvc
+  namespace: technitium
+  labels:
+    app: technitium
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi 
+  selector:
+    matchLabels:
+      app: technitium
+  storageClassName: local-storage 

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: technitium-config
+  namespace: technitium
+data:
+  dns.server.domain: "dns-server"
+  dns.server.prefer.ipv6: "false"
+  dns.server.optional.protocol.dnsoverhttps: "false"
+  dns.server.recursion: "AllowOnlyForPrivateNetworks"
+  dns.server.recursion.denied.networks: "1.1.1.0/24"
+  dns.server.recursion.allowed.network: "127.0.0.1, 10.0.0.0/8"
+  dns.server.enableblocking: "false"
+  dns.server.allowtxt.blockingreport: "false"
+  dns.server.forwarder.ips: "1.1.1.1, 8.8.8.8"
+  dns.server.forwarder.protocol: "Tcp"

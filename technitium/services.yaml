@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: technitium-service-tcp
+  namespace: technitium
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "technitium-service"
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 10.0.0.25
+  selector:
+    app: technitium
+  ports:
+    - protocol: TCP
+      #DNS web console
+      port: 5380
+      name: "dns-web-console"
+      targetPort: 5380
+
+    - protocol: TCP
+      #DHCP service
+      port: 53
+      name: "dhcp-service"
+      targetPort: 53
+      
+    - protocol: TCP
+      #DNS-over-HTTPS service
+      port: 443
+      name: "dns-over-https-service"
+      targetPort: 443
+
+    - protocol: TCP
+      #DNS-over-HTTPS service certbot certificate renewal
+      port: 80
+      name: "dns-over-https-certbot"
+      targetPort: 80
+
+    - protocol: TCP
+      #DNS-over-HTTPS using reverse proxy
+      port: 8053
+      name: "dns-over-https-reverse-proxy"
+      targetPort: 8053
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: technitium-service-udp
+  namespace: technitium
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "technitium-service"
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 10.0.0.25
+  selector:
+    app: technitium
+  ports:
+    - protocol: UDP
+      #DNS service
+      port: 53
+      name: "dns-service"
+      targetPort: 53
+
+    - protocol: UDP
+      #DNS-over-TLS service
+      port: 853
+      name: "dns-over-tls-service"
+      targetPort: 853

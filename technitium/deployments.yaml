@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: technitium
+  namespace: technitium
+  labels:
+    app: technitium
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: technitium
+  template:
+    metadata:
+      labels:
+        app: technitium
+    spec:
+      containers:
+      - name: technitium
+        image: technitium/dns-server:latest
+        resources:
+          requests:
+            memory: "125Mi"
+            cpu: "250m"
+          limits:
+            memory: "500Mi"
+            cpu: "750m"
+        env:
+        - name: DNS_SERVER_DOMAIN
+          #The primary domain name used by this DNS Server to identify itself.
+          valueFrom:
+            configMapKeyRef:
+              name: technitium-config
+              key: dns.server.domain
+
+        - name: DNS_SERVER_ADMIN_PASSWORD
+          #DNS web console admin user password.
+          valueFrom:
+            secretKeyRef:
+              name: technitium-password
+              key: dns.server.admin.password
+              optional: false
+
+        #- name: DNS_SERVER_ADMIN_PASSWORD_FILE
+        #  #The path to a file that contains a plain text password for the DNS web console admin user.
+        #  value: "password.txt"
+
+        - name: DNS_SERVER_PREFER_IPV6
+          #DNS Server will use IPv6 for querying whenever possible with this option enabled.
+          valueFrom:
+            configMapKeyRef:
+              name: technitium-config
+              key: dns.server.prefer.ipv6
+
+        - name: DNS_SERVER_OPTIONAL_PROTOCOL_DNS_OVER_HTTP
+          #Enables DNS server optional protocol DNS-over-HTTP on TCP port 8053 to be used with a TLS terminating reverse proxy like nginx.
+          valueFrom:
+            configMapKeyRef:
+              name: technitium-config
+              key: dns.server.optional.protocol.dnsoverhttps
+
+        - name: DNS_SERVER_RECURSION
+          #Recursion options: Allow, Deny, AllowOnlyForPrivateNetworks, UseSpecifiedNetworks.
+          valueFrom:
+            configMapKeyRef:
+              name: technitium-config
+              key: dns.server.recursion
+
+        - name: DNS_SERVER_RECURSION_DENIED_NETWORKS
+          #Comma separated list of IP addresses or network addresses to deny recursion. Valid only for `UseSpecifiedNetworks` recursion option
+          valueFrom:
+            configMapKeyRef:
+              name: technitium-config
+              key: dns.server.recursion.denied.networks
+
+        - name: DNS_SERVER_RECURSION_ALLOWED_NETWORKS
+          #Comma separated list of IP addresses or network addresses to allow recursion. Valid only for `UseSpecifiedNetworks` recursion option.
+          valueFrom:
+            configMapKeyRef:
+              name: technitium-config
+              key: dns.server.recursion.allowed.network
+
+        - name: DNS_SERVER_ENABLE_BLOCKING
+          #Sets the DNS server to block domain names using Blocked Zone and Block List Zone.
+          valueFrom:
+            configMapKeyRef:
+              name: technitium-config
+              key: dns.server.enableblocking
+
+        - name: DNS_SERVER_ALLOW_TXT_BLOCKING_REPORT
+          #Specifies if the DNS Server should respond with TXT records containing a blocked domain report for TXT type requests.
+          valueFrom:
+            configMapKeyRef:
+              name: technitium-config
+              key: dns.server.allowtxt.blockingreport
+
+        - name: DNS_SERVER_FORWARDERS
+          #Comma separated list of forwarder addresses.
+          valueFrom:
+            configMapKeyRef:
+              name: technitium-config
+              key: dns.server.forwarder.ips
+
+        - name: DNS_SERVER_FORWARDER_PROTOCOL
+          #Forwarder protocol options: Udp, Tcp, Tls, Https, HttpsJson.
+          valueFrom:
+            configMapKeyRef:
+              name: technitium-config
+              key: dns.server.forwarder.protocol
+          
+        ports:
+        - containerPort: 5380 #DNS web console
+        - containerPort: 53 #DNS service
+        - containerPort: 67 #DHCP service
+        - containerPort: 853 #DNS-over-TLS service
+        - containerPort: 443 #DNS-over-HTTPS service
+        - containerPort: 80 #DNS-over-HTTPS service certbot certificate renewal
+        - containerPort: 8053 #DNS-over-HTTPS using reverse proxy
+
+        volumeMounts:
+          - mountPath: /etc/dns/config
+            name: configpvc-vol
+            
+      volumes:
+        - name: configpvc-vol
+          persistentVolumeClaim:
+            claimName: technitium-local-pvc
