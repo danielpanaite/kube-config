@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: codeserver
+  name: codeserver
+  namespace: codeserver
+spec:
+  selector:
+    matchLabels:
+      app: codeserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: codeserver
+    spec:
+      containers:
+      - image: codercom/code-server:latest
+        imagePullPolicy: Always
+        name: codeserver
+        env:
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: codeserver-password
+              key: codeserver.password
+              optional: false
+        
+        volumeMounts:
+          - mountPath: /home/coder/.config
+            name: codeconf-vol
+          - mountPath: /home/coder/project
+            name: code-vol
+
+      volumes:
+        - name: codeconf-vol
+          persistentVolumeClaim:
+            claimName: codeserverconf-local-pvc
+        - name: code-vol
+          persistentVolumeClaim:
+            claimName: codeserver-local-pvc
