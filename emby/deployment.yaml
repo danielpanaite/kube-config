@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emby
+  namespace: emby
+  labels:
+    app: emby
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emby
+  template:
+    metadata:
+      labels:
+        app: emby
+    spec:
+      volumes:
+        - name: emby-vol
+          persistentVolumeClaim:
+            claimName: emby-local-pvc
+        - name: embymedia-vol
+          persistentVolumeClaim:
+            claimName: embymedia-local-pvc
+      containers:
+      - name: emby
+        image: lscr.io/linuxserver/emby
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1500m"
+        ports:
+        - containerPort: 8096
+        - containerPort: 8920
+        volumeMounts:
+          - mountPath: "/config"
+            name: emby-vol
+          - mountPath: "/data"
+            name: embymedia-vol
+        env:
+        - name: GUID
+          valueFrom:
+            configMapKeyRef:
+              name: emby-config
+              key: pguid
+        - name: PUID
+          valueFrom:
+            configMapKeyRef:
+              name: emby-config
+              key: puid
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: emby-config
+              key: tz

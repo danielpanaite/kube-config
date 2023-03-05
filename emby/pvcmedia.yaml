@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: embymedia-local-pvc
+  namespace: emby
+  labels:
+    app: emby
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 300Gi 
+  selector:
+    matchLabels:
+      app: emby
+  storageClassName: local-storage 
