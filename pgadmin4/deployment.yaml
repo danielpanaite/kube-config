@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: pgadmin
-        image: pgadmin
+        image: dpage/pgadmin4
         ports:
           - containerPort: 80
         env:
@@ -27,5 +27,5 @@ spec:
         - name: PGADMIN_DEFAULT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: pgadmin
+              name: pgadmin-secret
               key: password
