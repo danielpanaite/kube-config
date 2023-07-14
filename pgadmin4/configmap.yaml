@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgadmin-config
+  namespace: pgadmin
+data:
+  PGADMIN_DEFAULT_EMAIL: dani.panaite@gmail.com
