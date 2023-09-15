@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: technitium
-        image: technitium/dns-server:latest
+        image: technitium/dns-server:11.4
         resources:
           requests:
             memory: "125Mi"
