@@ -19,7 +19,7 @@ spec:
             claimName: postgres-local-pvc
       containers:
       - name: postgres
-        image: postgres
+        image: postgres:15
         ports:
           - containerPort: 5432
         volumeMounts:
