@@ -118,7 +118,7 @@ spec:
         - containerPort: 8053 #DNS-over-HTTPS using reverse proxy
 
         volumeMounts:
-          - mountPath: /etc/dns/config
+          - mountPath: /etc/dns
             name: configpvc-vol
             
       volumes:
